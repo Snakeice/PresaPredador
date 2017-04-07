@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e500ff8209968f3489bad836ed0728e1
+timeCreated: 1490328799
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - fabricaInimigo: {instanceID: 0}
+  - selecao: {instanceID: 0}
+  - inimigo: {fileID: 1621132537095546, guid: 4889b77c8087a3444b7ba3264e1b4558, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
