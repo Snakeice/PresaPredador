@@ -7,11 +7,11 @@ using Enums;
 public class GameController : MonoBehaviour {
 
 
-	private Dictionary<Inimigo, bool> inimigosAtivosControll;
+	private List<Inimigo> inimigosAtivosControll;
 
 	void Start () {
-		inimigosAtivosControll = new Dictionary<Inimigo, bool> ();
 		EventBus.Instance.Register (this);	
+		inimigosAtivosControll = new List<Inimigo> ();
 	}
 
 	void OnDestroy(){
@@ -28,20 +28,17 @@ public class GameController : MonoBehaviour {
 	}
 		
 	private void AtualizarEstadoDoJogo(){
-		foreach (Inimigo inimigo in inimigosAtivosControll.Keys) {
-			inimigosAtivosControll [inimigo] = inimigo.GetBateuNoAlvo();
-		}
-		bool resultado= true;
-		foreach (bool valor in inimigosAtivosControll.Values) {
-			if (!valor) {
-				resultado = false;
+		bool resultado = true;
+		foreach (Inimigo inimigo in inimigosAtivosControll) {
+			if (!inimigo.GetBateuNoAlvo()) {
+					resultado = false;
+				}
 			}
-		}
-		if (resultado) {
-			EventBus.Instance.Post(EstadoDoJogoEnum.rodando);
-		} else {
-			EventBus.Instance.Post(EstadoDoJogoEnum.gameOver);
-		}
+			if (!resultado) {
+				EventBus.Instance.Post (EstadoDoJogoEnum.rodando);
+			} else {
+				EventBus.Instance.Post (EstadoDoJogoEnum.gameOver);
+			}
 	}
 
 
@@ -51,7 +48,7 @@ public class GameController : MonoBehaviour {
 		inimigosAtivosControll.Clear();
 		foreach(Inimigo inimigo in inimigos){
 			if (inimigo.enabled) {
-				inimigosAtivosControll.Add (inimigo, inimigo.GetBateuNoAlvo ());
+				inimigosAtivosControll.Add (inimigo);
 			}
 		}
 	}
