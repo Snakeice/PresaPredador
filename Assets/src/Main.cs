@@ -28,14 +28,14 @@ public class Main : MonoBehaviour {
 			float [] PosicaoY = new float[inimigos.Count];
 				for (var i = 0; i < inimigos.Count; i++) {
 					PosicaoX [i] = posicao.x;
-					PosicaoZ [i] = posicao.z;
 					PosicaoY [i] = posicao.y;
-				}
+					PosicaoZ [i] = posicao.z;
+				}				
 				for (var j = 0; j < inimigos.Count; j++) {
 					System.Random rnd = new System.Random();
 					int QualPosicao;
 					QualPosicao = rnd.Next(0, inimigos.Count);
-					Vector3 novaPosicao = new Vector3(PosicaoX [QualPosicao], PosicaoZ [j], PosicaoY [j]);
+					Vector3 novaPosicao = new Vector3(PosicaoX [QualPosicao], PosicaoY [QualPosicao], PosicaoZ [QualPosicao]);
 					inimigo.transform.position = novaPosicao;
 				}
 			}

@@ -15,7 +15,7 @@ public class UIController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		EventBus.Instance.Register (this);
-		reiniciar.onClick(
+
 	}
 
 
