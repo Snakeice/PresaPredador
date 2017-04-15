@@ -21,6 +21,7 @@ public class FabricaInimigo : MonoBehaviour{
 
 
 		GameObject enemyObj = Instantiate (inimigo, newVec, Quaternion.identity);
+		enemyObj.name = "Inimigo:"+ (System.Math.Ceiling( Random.value * 100000));
 		return enemyObj.GetComponent<Inimigo>();
 	}
 

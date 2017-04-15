@@ -73,6 +73,7 @@ public class Inimigo : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider col){
+		
 		if ((col.CompareTag (TAG)) && !BateuNoAlvo){
 			BateuNoAlvo = true;
 			EventBus.Instance.Post (ColliderUpdate.Atualizar);

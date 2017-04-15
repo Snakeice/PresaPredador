@@ -12,5 +12,10 @@ namespace Enums
 	public enum ColliderUpdate{
 		Atualizar
 	}
+
+	public enum PlayerStateEnum
+	{
+		Capturado, Livre, Fugiu
+	}
 }
 

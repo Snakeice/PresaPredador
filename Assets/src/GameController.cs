@@ -19,13 +19,13 @@ public class GameController : MonoBehaviour {
 	}
 
 	void Update () {
-
-	}
-
-	[Kakaroto]
-	public void UpdateGameState(Enums.ColliderUpdate colUP){
 		AtualizarEstadoDoJogo ();
 	}
+
+/*	[Kakaroto]
+	public void UpdateGameState(Enums.ColliderUpdate colUP){
+		AtualizarEstadoDoJogo ();
+	}*/
 		
 	private void AtualizarEstadoDoJogo(){
 		bool resultado = true;
