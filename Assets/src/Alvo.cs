@@ -11,13 +11,13 @@ public class Alvo : MonoBehaviour {
 	public EstadoEnum estadoPasseio;
 	private Vector3 FutPos;
 	public float raioVisao;
-	private PlayerStateEnum estadoCaptura = PlayerStateEnum.Livre;
 	[SerializeField]
 	private GameObject blood;
 	private string TAG_PAREDE = "Parede";
 	private float timer;
 	public float wanderTimer;
 	private bool paredeAtualizada = false;
+	private Vector3 parede;
 
 
 	void Start () {
@@ -35,7 +35,7 @@ public class Alvo : MonoBehaviour {
 	//	sangrar ();
 	}
 	private void MoverPlayer(){
-		if (estadoCaptura == PlayerStateEnum.Livre) {
+	//	if (estadoCaptura == PlayerStateEnum.Livre) {
 			timer += Time.deltaTime;
 			if (timer >= wanderTimer) {
 				FutPos = UtilsGeral.RandomNavSphere (transform.position, 40, -1);
@@ -49,7 +49,7 @@ public class Alvo : MonoBehaviour {
 
 
 
-		}
+		//}
 
 
 	}
@@ -71,9 +71,14 @@ public class Alvo : MonoBehaviour {
 
 	private bool Fugir(){
 		if (estadoPasseio == EstadoEnum.Passeio) {
+			paredeAtualizada = false;
 			return false;
 		}
-		Vector3 paredeProxima = findWall();
+		if (!paredeAtualizada) {
+			paredeAtualizada = true;
+			findWall (controll.gameObject);
+		}
+		controll.Move (parede, false, false);
 		return true;
 	}
 
@@ -83,30 +88,37 @@ public class Alvo : MonoBehaviour {
 		if (col.CompareTag (TAG_PAREDE)) {
 			Debug.Log ("Alvo bateu na parede:" + Time.frameCount);
 			EventBus.Instance.Post (Enums.ColliderUpdate.Atualizar);
+			timer = 9999;
 			
 		}
 	}
 
 
 
-	private Vector3 findWall(){
-		Vector3 player = transform.position;
-		RaycastHit hit; 
+	private void findWall(GameObject alvo){
+		Vector3 player = Vector3.ProjectOnPlane (alvo.transform.position, Vector3.up );
+		RaycastHit[] hits; 
 		float menorDistancia = 999999;
-		Vector3 parede = new Vector3();
 		for (int i = 1; i <= 360; i += 5) { 
-			Vector3 rotacao = new Vector3 (0, 0, i);
-			Physics.Raycast (player, rotacao, out hit);
-			Debug.Log ("Ang: " + i.ToString() +  "    Obj: " + hit.collider.name + "   dist: " + UtilsGeral.CalcularDistancia (this.gameObject, hit.point).ToString());
-			if (hit.collider.CompareTag (TAG_PAREDE)) {
-				float distancia = UtilsGeral.CalcularDistancia (this.gameObject, hit.point);
-				if (distancia < menorDistancia) {
-					menorDistancia = distancia;
-					parede = hit.point;
+			Vector3 rotacao = new Vector3 (0,i, 0);
+
+			hits = Physics.RaycastAll (player, rotacao, 8);
+			if ((hits == null) || (hits.Length == 0))
+				continue;
+			foreach (RaycastHit hit in hits) {
+
+				Debug.DrawLine(transform.position, hit.point, Color.green);
+				if (hit.collider.CompareTag (TAG_PAREDE)) {
+					float distancia = UtilsGeral.CalcularDistancia (this.gameObject, hit.point);
+					if (distancia < menorDistancia) {
+						menorDistancia = distancia;
+						parede = hit.point;
+					}
 				}
 			}
 		}
-		return parede;
+		if (menorDistancia == 999999)
+			paredeAtualizada = false;
 	}
 		
 }
