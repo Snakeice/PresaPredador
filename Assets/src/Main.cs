@@ -8,6 +8,7 @@ using System;
 public class Main : MonoBehaviour {
 	[SerializeField] public FabricaInimigo fabricaInimigo;
 	[SerializeField] private int enemysNum = 4;
+	[SerializeField] private float tempoMutacao = 4;
 	private List<Inimigo> inimigos;
 
 	void Start () {
@@ -18,25 +19,40 @@ public class Main : MonoBehaviour {
 		} while(inimigos.Count < enemysNum);
 		EventBus.Instance.Post (inimigos);
 	}
+
+	float contadorTempo = 0;
 	
 	void Update () {
+		
+
+			contadorTempo += Time.deltaTime;
+			if (contadorTempo >= tempoMutacao) {
 		foreach (Inimigo inimigo in inimigos) {			
-			if (inimigo.estado == Enums.EstadoEnum.Passeio){
-			Vector3 posicao = inimigo.transform.position;
-			float [] PosicaoX = new float[inimigos.Count];
-			float [] PosicaoZ = new float[inimigos.Count];
-			float [] PosicaoY = new float[inimigos.Count];
-				for (var i = 0; i < inimigos.Count; i++) {
-					PosicaoX [i] = posicao.x;
-					PosicaoY [i] = posicao.y;
-					PosicaoZ [i] = posicao.z;
-				}				
-				for (var j = 0; j < inimigos.Count; j++) {
-					System.Random rnd = new System.Random();
-					int QualPosicao;
-					QualPosicao = rnd.Next(0, inimigos.Count);
-					Vector3 novaPosicao = new Vector3(PosicaoX [QualPosicao], PosicaoY [QualPosicao], PosicaoZ [QualPosicao]);
-					inimigo.transform.position = novaPosicao;
+				float[] PosicaoX = new float[inimigos.Count];
+				float[] PosicaoZ = new float[inimigos.Count];
+				float[] PosicaoY = new float[inimigos.Count];
+				if (inimigo.estado == Enums.EstadoEnum.Passeio) {
+					for (var i = 0; i < inimigos.Count; i++) {
+						Vector3 posicao = inimigos [i].transform.position;
+						PosicaoX [i] = posicao.x;
+						PosicaoY [i] = posicao.y;
+						PosicaoZ [i] = posicao.z;
+					}
+							System.Random rnd = new System.Random ();
+							int QualInimigo;
+							int QualXZ;
+							int QualInimigoTroca;
+							QualXZ = rnd.Next (0, 1);
+							QualInimigo = rnd.Next (0, inimigos.Count);
+							QualInimigoTroca = rnd.Next (0, inimigos.Count);
+							if (QualXZ == 0) {
+								Vector3 novaPosicao = new Vector3 (PosicaoX [QualInimigoTroca], PosicaoY [QualInimigo], PosicaoZ [QualInimigo]);	
+								inimigos[QualInimigo].transform.position = novaPosicao;
+							} else {
+								Vector3 novaPosicao = new Vector3 (PosicaoX [QualInimigo], PosicaoY [QualInimigo], PosicaoZ [QualInimigoTroca]);
+								inimigos [QualInimigo].transform.position = novaPosicao;
+							}
+						contadorTempo = 0;					
 				}
 			}
 		}
