@@ -12,6 +12,28 @@ public class FabricaInimigo : MonoBehaviour{
 		Instantiate (inimigo, localDeConstrucao, Quaternion.identity);
 	}
 
+
+	public List<Inimigo> CriarInimigos(GameObject go, int qtdd){
+		List<Inimigo> inimigos = new List<Inimigo>();
+		for (int i = 0; i < qtdd; i++) {
+			inimigos.Add (criaSobreObj (go));
+		}
+
+		return inimigos;
+
+	}
+
+	public void ManterAtivo(List<Inimigo> inimigos, int qtdd){
+		System.Random rnd = new System.Random ();
+		foreach (Inimigo inimigo in inimigos) {
+			inimigo.gameObject.SetActive (false);
+		}
+		for (int i = 0; i < qtdd; i++) {
+			inimigos [rnd.Next (0, inimigos.Count)].gameObject.SetActive (true);
+		}
+	}
+
+
 	public Inimigo criaSobreObj (GameObject go)	{
 
 		Bounds bounds = go.GetComponent<MeshFilter>().mesh.bounds;

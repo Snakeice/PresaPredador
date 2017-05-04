@@ -13,7 +13,7 @@ public class Inimigo : MonoBehaviour {
 	public EstadoEnum estado;
 	private bool PerseguicaoForcada = false;
 	private bool BateuNoAlvo = false;
-
+	private playerControlDB pc;
 	private float timer;
 	public float wanderTimer;
 
@@ -23,6 +23,8 @@ public class Inimigo : MonoBehaviour {
 		agent = GetComponent<NavMeshAgent>();
 		timer = wanderTimer;
 		transform.position = UtilsGeral.RandomNavSphere(transform.position, 50, -1);
+		pc = GetComponent<playerControlDB> ();
+
 		EventBus.Instance.Register (this);
 	}
 	void OnDestroy(){
@@ -47,11 +49,9 @@ public class Inimigo : MonoBehaviour {
 			}
 		}
 		if (UtilsGeral.estahNaVisao(this.gameObject, GameObject.FindGameObjectWithTag (TAG), raioVisao)) {
-			GetComponent<Renderer> ().material.color = Color.magenta;
 			SetEstado (EstadoEnum.Caca);
 
 		} else {
-			GetComponent<Renderer> ().material =  Resources.Load ("Materials/inimigo", typeof(Material)) as Material;
 			SetEstado (EstadoEnum.Passeio);
 		}
 }
@@ -74,9 +74,13 @@ public class Inimigo : MonoBehaviour {
 
 	void OnTriggerEnter(Collider col){
 		
-		if ((col.CompareTag (TAG)) && !BateuNoAlvo){
-			BateuNoAlvo = true;
-			EventBus.Instance.Post (ColliderUpdate.Atualizar);
+		if ((col.CompareTag (TAG))){
+			if(pc != null) 			pc.BasicAttack ();
+			if (!BateuNoAlvo) {
+				BateuNoAlvo = true;
+				EventBus.Instance.Post (SangueEnum.Jorrar);
+				EventBus.Instance.Post (ColliderUpdate.Atualizar);
+			}
 		}
 	}
 		
@@ -85,5 +89,9 @@ public class Inimigo : MonoBehaviour {
 	public bool GetBateuNoAlvo ()
 	{
 		return BateuNoAlvo;
+	}
+
+	public void Destruir(){
+		DestroyImmediate (this.gameObject);
 	}
 }

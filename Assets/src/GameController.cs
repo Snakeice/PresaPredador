@@ -6,7 +6,8 @@ using Enums;
 
 public class GameController : MonoBehaviour {
 
-
+	[SerializeField]
+	private GameObject alvo;
 	private List<Inimigo> inimigosAtivosControll;
 
 	void Start () {
@@ -29,8 +30,9 @@ public class GameController : MonoBehaviour {
 		
 	private void AtualizarEstadoDoJogo(){
 		bool resultado = true;
-		foreach (Inimigo inimigo in inimigosAtivosControll) {
-			if (!inimigo.GetBateuNoAlvo()) {
+		if (alvo.GetComponent<Alvo> ().estadoPasseio != EstadoEnum.fulgaOK) {
+			foreach (Inimigo inimigo in inimigosAtivosControll) {
+				if (!inimigo.GetBateuNoAlvo ()) {
 					resultado = false;
 				}
 			}
@@ -39,6 +41,9 @@ public class GameController : MonoBehaviour {
 			} else {
 				EventBus.Instance.Post (EstadoDoJogoEnum.gameOver);
 			}
+		} else {
+			EventBus.Instance.Post (EstadoDoJogoEnum.wins);
+		}
 	}
 
 
@@ -47,7 +52,7 @@ public class GameController : MonoBehaviour {
 	public void UpdateActiveEnemyList(List<Inimigo> inimigos){
 		inimigosAtivosControll.Clear();
 		foreach(Inimigo inimigo in inimigos){
-			if (inimigo.enabled) {
+			if (inimigo.gameObject.activeSelf) {
 				inimigosAtivosControll.Add (inimigo);
 			}
 		}

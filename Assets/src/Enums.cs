@@ -4,7 +4,7 @@ namespace Enums
 {
 	public enum EstadoEnum
 	{
-		Passeio, Fulga, Caca
+		Passeio, Fulga, Caca, fulgaOK, cacaOK
 	}
 	public enum EstadoDoJogoEnum{
 		rodando, gameOver, wins
@@ -16,6 +16,10 @@ namespace Enums
 	public enum PlayerStateEnum
 	{
 		Capturado, Livre, Fugiu
+	}
+	public enum SangueEnum 
+	{
+		Jorrar, nops
 	}
 }
 

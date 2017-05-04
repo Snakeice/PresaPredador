@@ -13,6 +13,8 @@ public class Alvo : MonoBehaviour {
 	public float raioVisao;
 	[SerializeField]
 	private GameObject blood;
+	[SerializeField]
+	private ParticleSystem ps;
 	private string TAG_PAREDE = "Parede";
 	private float timer;
 	public float wanderTimer;
@@ -24,6 +26,7 @@ public class Alvo : MonoBehaviour {
 		estadoPasseio = EstadoEnum.Passeio;
 		controll = GetComponent<ThirdPersonCharacter> ();
 		timer = wanderTimer;
+		EventBus.Instance.Register (this);
 
 
 		
@@ -33,6 +36,7 @@ public class Alvo : MonoBehaviour {
 	void Update () {
 		MoverPlayer ();
 	//	sangrar ();
+	//	findWall(gameObject);
 	}
 	private void MoverPlayer(){
 	//	if (estadoCaptura == PlayerStateEnum.Livre) {
@@ -47,7 +51,7 @@ public class Alvo : MonoBehaviour {
 				Fugir ();
 			}
 
-
+	
 
 		//}
 
@@ -56,6 +60,12 @@ public class Alvo : MonoBehaviour {
 
 	public void sangrar(){
 		Instantiate(blood, this.transform.position, Random.rotation); 
+	}
+
+	[Kakaroto]
+	public void Sangue(SangueEnum sangue){
+		ps.gameObject.SetActive (true);
+		ps.Emit (1024);
 	}
 
 	private bool InimigoNaVisao(){
@@ -87,6 +97,8 @@ public class Alvo : MonoBehaviour {
 	void OnTriggerEnter(Collider col){
 		if (col.CompareTag (TAG_PAREDE)) {
 			Debug.Log ("Alvo bateu na parede:" + Time.frameCount);
+			estadoPasseio = EstadoEnum.fulgaOK;
+			EventBus.Instance.Post (estadoPasseio);
 			EventBus.Instance.Post (Enums.ColliderUpdate.Atualizar);
 			timer = 9999;
 			
@@ -100,8 +112,8 @@ public class Alvo : MonoBehaviour {
 		RaycastHit[] hits; 
 		float menorDistancia = 999999;
 		for (int i = 1; i <= 360; i += 5) { 
-			Vector3 rotacao = new Vector3 (0,i, 0);
-
+			Vector3 rotacao = transform.TransformDirection(new Vector3 (0,i, 0));
+			this.transform.eulerAngles = rotacao;
 			hits = Physics.RaycastAll (player, rotacao, 8);
 			if ((hits == null) || (hits.Length == 0))
 				continue;

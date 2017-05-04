@@ -4,43 +4,53 @@ using UnityEngine;
 using Utils.dp;
 using UnityEngine.SceneManagement;
 using System;
+using Enums;
 
 public class Main : MonoBehaviour {
 	[SerializeField] public FabricaInimigo fabricaInimigo;
 	[SerializeField] private int enemysNum = 4;
+	[SerializeField] private int TempoMutacao = 10;
 	private List<Inimigo> inimigos;
+	private Genetics gen;
+	private float contTempo = 0;
+	private int countCruz = 0;
+	private bool Caca = false;
 
 	void Start () {
 		inimigos = new List<Inimigo> ();
-
-		do {
-			inimigos.Add (fabricaInimigo.criaSobreObj (GameObject.Find ("Chao")));
-		} while(inimigos.Count < enemysNum);
+		gen = new Genetics ();
+		inimigos = fabricaInimigo.CriarInimigos (GameObject.Find ("Chao"), enemysNum * 10);
+		fabricaInimigo.ManterAtivo (inimigos, enemysNum);
+		EventBus.Instance.Register (this);
 		EventBus.Instance.Post (inimigos);
 	}
 	
 	void Update () {
-		foreach (Inimigo inimigo in inimigos) {			
-			if (inimigo.estado == Enums.EstadoEnum.Passeio){
-			Vector3 posicao = inimigo.transform.position;
-			float [] PosicaoX = new float[inimigos.Count];
-			float [] PosicaoZ = new float[inimigos.Count];
-			float [] PosicaoY = new float[inimigos.Count];
-				for (var i = 0; i < inimigos.Count; i++) {
-					PosicaoX [i] = posicao.x;
-					PosicaoY [i] = posicao.y;
-					PosicaoZ [i] = posicao.z;
-				}				
-				for (var j = 0; j < inimigos.Count; j++) {
-					System.Random rnd = new System.Random();
-					int QualPosicao;
-					QualPosicao = rnd.Next(0, inimigos.Count);
-					Vector3 novaPosicao = new Vector3(PosicaoX [QualPosicao], PosicaoY [QualPosicao], PosicaoZ [QualPosicao]);
-					inimigo.transform.position = novaPosicao;
-				}
+		contTempo += Time.deltaTime;
+		if ((contTempo >= TempoMutacao) && !Caca) {
+			if (countCruz > TempoMutacao) {
+				gen.Cruzamento (inimigos);
+			} else {
+				gen.Mutacao (inimigos);
+				countCruz++;
+			}
+			contTempo = 0;
+		}
+	}
+	[Kakaroto]
+	public void AtualizaTag(EstadoEnum estado){
+		this.Caca = estado == EstadoEnum.Caca || estado == EstadoEnum.cacaOK;
+	}
+
+	[Kakaroto]
+	public void StopGame(EstadoDoJogoEnum estado){
+		if (estado != EstadoDoJogoEnum.rodando) {
+			foreach (GameObject ga in GameObject.FindGameObjectsWithTag("Inimigo")) {
+				DestroyImmediate (ga);
 			}
 		}
 	}
+
 
 
 	public void restart(){
