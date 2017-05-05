@@ -64,11 +64,12 @@ public class Inimigo : MonoBehaviour {
 	private bool PerseguirTag(){
 		if ((estado == EstadoEnum.Passeio) &&(!PerseguicaoForcada)) return false;
 		Vector3 direcao = (GameObject.FindGameObjectWithTag("Alvo").transform.position - transform.position).normalized;
-		transform.position += direcao * Time.deltaTime*10;
+		//transform.position += direcao * Time.deltaTime*10;
+		agent.SetDestination(GameObject.FindGameObjectWithTag("Alvo").transform.position);
 
-		Quaternion olharPara = Quaternion.LookRotation (direcao);
-		direcao.y = 0.5f;
-		transform.rotation = olharPara;
+		//Quaternion olharPara = Quaternion.LookRotation (direcao);
+		//direcao.y = 0.5f;
+		//transform.rotation = olharPara;
 		return true;
 	}
 

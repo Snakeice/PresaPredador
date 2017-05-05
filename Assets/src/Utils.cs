@@ -27,7 +27,10 @@ public class UtilsGeral : MonoBehaviour {
 	}
 		public static float CalcularDistancia(GameObject o, Vector3 alvo){
 			Vector3 posThis = Vector3.ProjectOnPlane (o.transform.position, Vector3.up);
-			return Vector3.Distance (posThis, alvo);
+			return CalcularDistancia (posThis, alvo);
+		}
+		public static float CalcularDistancia(Vector3 o, Vector3 alvo){
+			return Vector3.Distance (o, alvo);
 		}
 }
 }

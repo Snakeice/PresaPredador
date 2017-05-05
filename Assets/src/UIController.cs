@@ -29,7 +29,7 @@ public class UIController : MonoBehaviour {
 	}
 
 	private void MostrarTexto(){
-		switch (estadoDoJogo) {
+			switch (estadoDoJogo) {
 		case EstadoDoJogoEnum.gameOver:
 			gameOver.SetActive (true);
 			reiniciar.gameObject.SetActive (true);

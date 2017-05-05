@@ -5,6 +5,7 @@ using UnityStandardAssets.Characters.ThirdPerson;
 using Enums;
 using Utils;
 using Utils.dp;
+using UnityEngine.AI;
 
 public class Alvo : MonoBehaviour {
 	private ThirdPersonCharacter controll;
@@ -15,6 +16,10 @@ public class Alvo : MonoBehaviour {
 	private GameObject blood;
 	[SerializeField]
 	private ParticleSystem ps;
+	[SerializeField]
+	private AudioSource grito;
+	[SerializeField]
+	private AudioSource fuga;
 	private string TAG_PAREDE = "Parede";
 	private float timer;
 	public float wanderTimer;
@@ -27,16 +32,18 @@ public class Alvo : MonoBehaviour {
 		controll = GetComponent<ThirdPersonCharacter> ();
 		timer = wanderTimer;
 		EventBus.Instance.Register (this);
-
+		Camera.current.transform.LookAt (transform);
 
 		
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		MoverPlayer ();
-	//	sangrar ();
-	//	findWall(gameObject);
+		if (estadoPasseio == EstadoEnum.cacaOK || estadoPasseio == EstadoEnum.fulgaOK) {
+			
+		} else {
+			MoverPlayer ();
+		}
 	}
 	private void MoverPlayer(){
 	//	if (estadoCaptura == PlayerStateEnum.Livre) {
@@ -58,6 +65,13 @@ public class Alvo : MonoBehaviour {
 
 	}
 
+/*	[Kakaroto]
+	public void AtualizaEstadoFulga(EstadoDoJogoEnum e){
+		if (e != EstadoDoJogoEnum.rodando) {
+			fuga.Stop ();
+		}
+	}*/
+
 	public void sangrar(){
 		Instantiate(blood, this.transform.position, Random.rotation); 
 	}
@@ -65,6 +79,8 @@ public class Alvo : MonoBehaviour {
 	[Kakaroto]
 	public void Sangue(SangueEnum sangue){
 		ps.gameObject.SetActive (true);
+		grito.Play ();
+		sangrar ();
 		ps.Emit (1024);
 	}
 
@@ -87,6 +103,7 @@ public class Alvo : MonoBehaviour {
 		if (!paredeAtualizada) {
 			paredeAtualizada = true;
 			findWall (controll.gameObject);
+			fuga.Play ();
 		}
 		controll.Move (parede, false, false);
 		return true;
@@ -95,13 +112,12 @@ public class Alvo : MonoBehaviour {
 
 
 	void OnTriggerEnter(Collider col){
-		if (col.CompareTag (TAG_PAREDE)) {
+		if (col.CompareTag (TAG_PAREDE) && estadoPasseio.Equals(EstadoEnum.Fulga)) {
 			Debug.Log ("Alvo bateu na parede:" + Time.frameCount);
 			estadoPasseio = EstadoEnum.fulgaOK;
 			EventBus.Instance.Post (estadoPasseio);
 			EventBus.Instance.Post (Enums.ColliderUpdate.Atualizar);
 			timer = 9999;
-			
 		}
 	}
 
@@ -109,26 +125,58 @@ public class Alvo : MonoBehaviour {
 
 	private void findWall(GameObject alvo){
 		Vector3 player = Vector3.ProjectOnPlane (alvo.transform.position, Vector3.up );
-		RaycastHit[] hits; 
+		RaycastHit[] hit; 
 		float menorDistancia = 999999;
-		for (int i = 1; i <= 360; i += 5) { 
-			Vector3 rotacao = transform.TransformDirection(new Vector3 (0,i, 0));
-			this.transform.eulerAngles = rotacao;
-			hits = Physics.RaycastAll (player, rotacao, 8);
-			if ((hits == null) || (hits.Length == 0))
-				continue;
-			foreach (RaycastHit hit in hits) {
-
-				Debug.DrawLine(transform.position, hit.point, Color.green);
-				if (hit.collider.CompareTag (TAG_PAREDE)) {
-					float distancia = UtilsGeral.CalcularDistancia (this.gameObject, hit.point);
-					if (distancia < menorDistancia) {
-						menorDistancia = distancia;
-						parede = hit.point;
+		float dist = 0;
+		hit = Physics.RaycastAll (player, Vector3.forward, 9999999099); 
+			if (hit != null){
+				foreach(RaycastHit h in hit){
+					dist = UtilsGeral.CalcularDistancia (player, h.point);
+					Debug.DrawRay (player, h.point, Color.blue, 9999);
+					if (dist < menorDistancia) {
+						menorDistancia = dist;
+						parede = h.point;
 					}
 				}
 			}
-		}
+
+				hit = Physics.RaycastAll (player, Vector3.back, 9999999099) ;
+			if (hit != null){
+				foreach(RaycastHit h in hit){
+					dist = UtilsGeral.CalcularDistancia (player, h.point);
+					Debug.DrawRay (player, h.point, Color.blue, 9999);
+					if (dist < menorDistancia) {
+						menorDistancia = dist;
+						parede = h.point;
+					}
+				}
+			}
+
+				hit = Physics.RaycastAll (player, Vector3.left, 9999999099) ;
+			if (hit != null){
+				foreach(RaycastHit h in hit){
+					dist = UtilsGeral.CalcularDistancia (player, h.point);
+					Debug.DrawRay (player, h.point, Color.blue, 9999);
+					if (dist < menorDistancia) {
+						menorDistancia = dist;
+						parede = h.point;
+					}
+				}
+			}
+		
+
+				hit = Physics.RaycastAll (player, Vector3.right, 9999999099); 
+			if (hit != null){
+				foreach(RaycastHit h in hit){
+					dist = UtilsGeral.CalcularDistancia (player, h.point);
+					Debug.DrawRay (player, h.point, Color.blue, 9999);
+					if (dist < menorDistancia) {
+						menorDistancia = dist;
+						parede = h.point;
+					}
+				}
+			}
+
 		if (menorDistancia == 999999)
 			paredeAtualizada = false;
 	}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Genetics
 	{
@@ -48,7 +49,7 @@ public class Genetics
 		return sum / vectors.Length;
 	}
 
-	public void Cruzamento(List<Inimigo> inimigos){
+	public void Cruzamento(ref List<Inimigo> inimigos){
 		List<Inimigo> ativos = new List<Inimigo> ();
 		foreach (Inimigo inimigo in inimigos) {
 			if (inimigo.gameObject.activeSelf) {
@@ -66,5 +67,20 @@ public class Genetics
 			inimigos.Remove (mae);
 			mae.Destruir ();
 		}
+	}
+
+	public Dictionary<float, Inimigo> CalcularListaFit(List<Inimigo> inimigos, Alvo alvo, bool somenteAtivos){
+		Dictionary<float, Inimigo> inimigosDist = new Dictionary<float, Inimigo> ();
+		foreach (Inimigo inimigo in inimigos) {
+			if((!somenteAtivos)||(somenteAtivos && inimigo.gameObject.activeSelf))
+			inimigosDist.Add (Utils.UtilsGeral.CalcularDistancia (alvo.gameObject, inimigo.gameObject), inimigo);
+		} 
+		List<float> keys =  inimigosDist.Keys.ToList ();
+		Dictionary<float, Inimigo> result = new Dictionary<float, Inimigo> ();
+		foreach (float key in keys) {
+			result.Add (key, inimigosDist [key]);
+		}
+		return result;
+
 	}
 }

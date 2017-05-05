@@ -36,9 +36,9 @@ public class GameController : MonoBehaviour {
 					resultado = false;
 				}
 			}
-			if (!resultado) {
-				EventBus.Instance.Post (EstadoDoJogoEnum.rodando);
-			} else {
+			if (/*!*/resultado) {
+			//	EventBus.Instance.Post (EstadoDoJogoEnum.rodando);
+			//} else {
 				EventBus.Instance.Post (EstadoDoJogoEnum.gameOver);
 			}
 		} else {
